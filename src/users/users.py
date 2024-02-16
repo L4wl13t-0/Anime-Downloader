@@ -6,6 +6,7 @@ from utils.users import validate_username, validate_user, get_username, validate
 from utils.passwords import check_password, get_password
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.decorators import user_access_required
+from schemas.users import validate_user as validate_user_schema
 import datetime
 
 users_blueprint = blueprints.Blueprint('users', __name__)
@@ -136,3 +137,49 @@ def deleteUser(user, user_id):
                         'action': 'delete',
                         'delete': True
                     }})
+
+
+@users_blueprint.route('/users', methods=['PUT'])
+@jwt_required()
+@user_access_required('update', 'not_updated', pass_user_id=True)
+def updateUser(user_id):
+    if not validate_user_by_id(user_id):
+        return jsonify({'msg': 'User does not exist',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'update',
+                            'update': False
+                        }
+                        }), 401
+
+    user = request.json.get('user')
+    if not user:
+        return jsonify({'msg': 'Missing user',
+                        'status': {
+                            'name': 'invalid_data',
+                            'action': 'update',
+                            'update': False
+                        }}), 400
+
+    if not validate_user_schema(user):
+        return jsonify({'msg': 'Invalid user',
+                        'status': {
+                            'name': 'invalid_data',
+                            'action': 'update',
+                        }}), 400
+
+    set_user = {}
+    set_user['username'] = user.get('username') if user.get('username') else get_username(user_id)
+    if user.get('password'):
+        set_user['password_hash'] = get_password(user.get('password'))
+    if user.get('email'):
+        set_user['email'] = get_password(user.get('email'))
+    mongo.db.users.update_one({'_id': user_id}, {'$set': set_user})
+
+    return jsonify({'msg': 'User updated successfully',
+                    'status': {
+                        'name': 'updated',
+                        'action': 'update',
+                        'update': True
+                    }
+                    })
