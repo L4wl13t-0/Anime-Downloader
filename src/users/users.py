@@ -152,29 +152,84 @@ def updateUser(user_id):
                         }
                         }), 401
 
-    user = request.json.get('user')
-    if not user:
-        return jsonify({'msg': 'Missing user',
+    data = request.json.get('data')
+    if not data:
+        return jsonify({'msg': 'Missing data',
                         'status': {
                             'name': 'invalid_data',
                             'action': 'update',
                             'update': False
                         }}), 400
 
-    if not validate_user_schema(user):
-        return jsonify({'msg': 'Invalid user',
+    if not validate_user_schema(data):
+        return jsonify({'msg': 'Invalid data',
                         'status': {
                             'name': 'invalid_data',
                             'action': 'update',
                         }}), 400
 
-    set_user = {}
-    set_user['username'] = user.get('username') if user.get('username') else get_username(user_id)
-    if user.get('password'):
-        set_user['password_hash'] = get_password(user.get('password'))
-    if user.get('email'):
-        set_user['email'] = get_password(user.get('email'))
-    mongo.db.users.update_one({'_id': user_id}, {'$set': set_user})
+    set_data = {}
+    set_data['username'] = data.get('username') if data.get('username') else get_username(user_id)
+    if data.get('password'):
+        set_data['password_hash'] = get_password(data.get('password'))
+    if data.get('email'):
+        set_data['email'] = get_password(data.get('email'))
+    mongo.db.users.update_one({'_id': user_id}, {'$set': set_data})
+
+    return jsonify({'msg': 'User updated successfully',
+                    'status': {
+                        'name': 'updated',
+                        'action': 'update',
+                        'update': True
+                    }
+                    })
+
+
+@users_blueprint.route('/users/<user>', methods=['PUT'])
+@jwt_required()
+@user_access_required('update', 'not_updated', pass_user_id=True)
+def updateUserAdmin(user, user_id):
+    if not validate_admin(user_id):
+        return jsonify({'msg': 'You are not administrator',
+                        'status': {
+                            'name': 'not_authorized',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 401
+
+    if not validate_user_by_id(user):
+        return jsonify({'msg': 'User does not exist',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'update',
+                            'update': False
+                        }
+                        }), 401
+
+    data = request.json.get('data')
+    if not data:
+        return jsonify({'msg': 'Missing data',
+                        'status': {
+                            'name': 'invalid_data',
+                            'action': 'update',
+                            'update': False
+                        }}), 400
+
+    if not validate_user_schema(data):
+        return jsonify({'msg': 'Invalid data',
+                        'status': {
+                            'name': 'invalid_data',
+                            'action': 'update',
+                        }}), 400
+
+    set_data = {}
+    set_data['username'] = data.get('username') if data.get('username') else get_username(user)
+    if data.get('password'):
+        set_data['password_hash'] = get_password(data.get('password'))
+    if data.get('email'):
+        set_data['email'] = get_password(data.get('email'))
+    mongo.db.users.update_one({'_id': ObjectId(user)}, {'$set': set_data})
 
     return jsonify({'msg': 'User updated successfully',
                     'status': {
