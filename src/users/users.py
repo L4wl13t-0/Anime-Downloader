@@ -238,3 +238,57 @@ def updateUserAdmin(user, user_id):
                         'update': True
                     }
                     })
+
+
+@users_blueprint.route('/users/profile', methods=['GET'])
+@jwt_required()
+def getProfile():
+    user_id = get_user_id(get_jwt_identity())
+    user = mongo.db.users.find_one({'_id': user_id})
+    if not user:
+        return jsonify({'msg': 'User not found', 'status': {
+            'name': 'not_found',
+            'action': 'get',
+            'get': False
+        }})
+        
+    return jsonify({
+        'msg': 'User retrieved',
+        'status': {
+            'name': 'retrieved',
+            'action': 'get',
+            'get': True
+        },
+        'data': {
+            '_id': str(ObjectId(user['_id'])),
+            'username': user.get('username'),
+            'email': user.get('email')
+        }
+    })
+
+
+@users_blueprint.route('/users/<username>', methods=['GET'])
+@jwt_required(optional=True)
+def getUserData(username):
+    user = mongo.db.users.find_one({'username': username})
+    if not user:
+        return jsonify({'msg': 'User not found', 'status': {
+            'name': 'not_found',
+            'action': 'get',
+            'get': False
+        }})
+        
+    return jsonify({
+        'msg': 'User retrieved',
+        'status': {
+            'name': 'retrieved',
+            'action': 'get',
+            'get': True
+        },
+        'data': {
+            '_id': str(ObjectId(user['_id'])),
+            'username': user.get('username'),
+            'email': user.get('email')
+        }
+    })
+
