@@ -22,15 +22,15 @@
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `username`        | `string`  | Basic Auth        |  
-| `passwword`       | `string`  | Basic Auth        | 
-| `stay_loged_in`   | `boolean` | Params            | 
+| `passwword`       | `string`  | Basic Auth        |
+| `stay_loged_in`   | `boolean` | Params            |
 
 ## `DELETE /api/users/<user>` | Eliminación de un usuario
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `Bearer Token`        | `token`  | Authorization Header       |  
-| `<user>`       | `id`  | URL Parameter        | 
+| `<user>`       | `id`  | URL Parameter        |
 
 ## `PUT /api/users` | Actualizacion del propio usuario
 
@@ -79,4 +79,4 @@
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
-| `<username>`        | `string`  | URL Parameter       |
+| `<username>`        | `string`  | URL Parameter   |
