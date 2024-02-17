@@ -1,9 +1,9 @@
 
 # API Reference (Users)
 
-#### `POST /api/users` | Registro de nuevo usuario
+## `POST /api/users` | Registro de nuevo usuario
 
-```JSON
+```js
 //BODY REQUEST JSON
 
 {
@@ -12,10 +12,10 @@
   "email": "test@gmail.com"
 }
 ```
-###
-#### `GET /api/users` | Inicio de sesion de usuario
 
-```JSON
+## `GET /api/users` | Inicio de sesion de usuario
+
+```js
 //HEADER AUTHORIZATION | BASIC AUTH
 ```
 
@@ -25,23 +25,20 @@
 | `passwword`       | `string`  | Basic Auth        | 
 | `stay_loged_in`   | `boolean` | Params            | 
 
-###
-#### `DELETE /api/users/<user>` | Eliminación de un usuario
+## `DELETE /api/users/<user>` | Eliminación de un usuario
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `Bearer Token`        | `token`  | Authorization Header       |  
 | `<user>`       | `id`  | URL Parameter        | 
 
-
-###
-#### `PUT /api/users` | Actualizacion del propio usuario
+## `PUT /api/users` | Actualizacion del propio usuario
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `Bearer Token`        | `token`  | Authorization Header       |  
 
-```JSON
+```js
 //BODY REQUEST JSON
 
 {
@@ -53,15 +50,14 @@
 }
 ```
 
-###
-#### `PUT /api/users/<user>` | Actualización Privilegiada de usuario
+## `PUT /api/users/<user>` | Actualización Privilegiada de usuario
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `Bearer Token`        | `token`  | Authorization Header       |
 | `<user>`        | `id`  | URL Parameter       |  
 
-```JSON
+```js
 //BODY REQUEST JSON
 
 {
@@ -73,15 +69,13 @@
 }
 ```
 
-###
-#### `GET /api/users/profile` | Obtención del perfil propio
+## `GET /api/users/profile` | Obtención del perfil propio
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
 | `Bearer Token`        | `token`  | Authorization Header       |
 
-###
-#### `GET /api/users/<username>` | Obtención del perfil de un usuario
+## `GET /api/users/<username>` | Obtención del perfil de un usuario
 
 | Parameter         | Type      | Description       |
 | :---------------- | :-------- | :---------------- |
