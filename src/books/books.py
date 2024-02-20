@@ -91,7 +91,7 @@ def getBooks():
                                 }), 400
             author_id = mongo.db.authors.find_one({'author': Filter}).get('_id')
             books = mongo.db.books.find({'author_id': author_id})
-        elif Filter.startswith('¿'):
+        elif Filter.startswith('%'):
             category = Filter[1:]
             if not validate_category(category):
                 return jsonify({'msg': f'invalid category "{category}"',
@@ -101,8 +101,11 @@ def getBooks():
                                     'get': False
                                 }
                                 }), 400
-            books = mongo.db.books.find(
-                {'categories': {'$elemMatch': {'$eq': category}}})
+            books = mongo.db.books.find({'categories': {'$elemMatch': {'$eq': category}}})
+        elif Filter.startswith('!'):
+            Filter = Filter.replace('!', '')
+            mongo.db.books.create_index({ "name": "text", "description": "text", "author" : "text" })
+            books = mongo.db.books.find({'$text': {'$search': Filter}})
 
     books = list(books)
     return jsonify({
