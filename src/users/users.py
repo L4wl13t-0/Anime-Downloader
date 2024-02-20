@@ -11,6 +11,7 @@ import datetime
 
 users_blueprint = blueprints.Blueprint('users', __name__)
 
+
 @users_blueprint.route('/users', methods=['POST'])
 def register():
     username = request.json.get('username')
@@ -34,7 +35,7 @@ def register():
                             'register': False
                         }
                         }), 400
-    
+
     if validate_email(email):
         return jsonify({'msg': 'Email already exists',
                         'status': {
@@ -106,7 +107,7 @@ def login():
                             'token': token
                         }
                         })
-    
+
 
 @users_blueprint.route('/users/<user>', methods=['DELETE'])
 @jwt_required()
@@ -120,7 +121,7 @@ def deleteUser(user, user_id):
                             'delete': False
                         }
                         }), 401
-        
+
     if not validate_user_by_id(user):
         return jsonify({'msg': 'User does not exist',
                         'status': {
@@ -136,7 +137,8 @@ def deleteUser(user, user_id):
                         'name': 'deleted',
                         'action': 'delete',
                         'delete': True
-                    }})
+                    }
+                    })
 
 
 @users_blueprint.route('/users', methods=['PUT'])
@@ -159,17 +161,20 @@ def updateUser(user_id):
                             'name': 'invalid_data',
                             'action': 'update',
                             'update': False
-                        }}), 400
+                        }
+                        }), 400
 
     if not validate_user_schema(data):
         return jsonify({'msg': 'Invalid data',
                         'status': {
                             'name': 'invalid_data',
                             'action': 'update',
-                        }}), 400
+                        }
+                        }), 400
 
     set_data = {}
-    set_data['username'] = data.get('username') if data.get('username') else get_username(user_id)
+    set_data['username'] = data.get('username') if data.get(
+        'username') else get_username(user_id)
     if data.get('password'):
         set_data['password_hash'] = get_password(data.get('password'))
     if data.get('email'):
@@ -214,17 +219,20 @@ def updateUserAdmin(user, user_id):
                             'name': 'invalid_data',
                             'action': 'update',
                             'update': False
-                        }}), 400
+                        }
+                        }), 400
 
     if not validate_user_schema(data):
         return jsonify({'msg': 'Invalid data',
                         'status': {
                             'name': 'invalid_data',
                             'action': 'update',
-                        }}), 400
+                        }
+                        }), 400
 
     set_data = {}
-    set_data['username'] = data.get('username') if data.get('username') else get_username(user)
+    set_data['username'] = data.get('username') if data.get(
+        'username') else get_username(user)
     if data.get('password'):
         set_data['password_hash'] = get_password(data.get('password'))
     if data.get('email'):
@@ -245,26 +253,28 @@ def updateUserAdmin(user, user_id):
 def getProfile():
     user_id = get_user_id(get_jwt_identity())
     user = mongo.db.users.find_one({'_id': user_id})
+
     if not user:
-        return jsonify({'msg': 'User not found', 'status': {
-            'name': 'not_found',
-            'action': 'get',
-            'get': False
-        }})
-        
-    return jsonify({
-        'msg': 'User retrieved',
-        'status': {
-            'name': 'retrieved',
-            'action': 'get',
-            'get': True
-        },
-        'data': {
-            '_id': str(ObjectId(user['_id'])),
-            'username': user.get('username'),
-            'email': user.get('email')
-        }
-    })
+        return jsonify({'msg': 'User not found',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'get',
+                            'get': False
+                        }
+                        })
+
+    return jsonify({'msg': 'User retrieved',
+                    'status': {
+                        'name': 'retrieved',
+                        'action': 'get',
+                        'get': True
+                    },
+                    'data': {
+                        '_id': str(ObjectId(user['_id'])),
+                        'username': user.get('username'),
+                        'email': user.get('email')
+                    }
+                    })
 
 
 @users_blueprint.route('/users/<username>', methods=['GET'])
@@ -272,23 +282,23 @@ def getProfile():
 def getUserData(username):
     user = mongo.db.users.find_one({'username': username})
     if not user:
-        return jsonify({'msg': 'User not found', 'status': {
-            'name': 'not_found',
-            'action': 'get',
-            'get': False
-        }})
-        
-    return jsonify({
-        'msg': 'User retrieved',
-        'status': {
-            'name': 'retrieved',
-            'action': 'get',
-            'get': True
-        },
-        'data': {
-            '_id': str(ObjectId(user['_id'])),
-            'username': user.get('username'),
-            'email': user.get('email')
-        }
-    })
+        return jsonify({'msg': 'User not found',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'get',
+                            'get': False
+                        }
+                        })
 
+    return jsonify({'msg': 'User retrieved',
+                    'status': {
+                        'name': 'retrieved',
+                        'action': 'get',
+                        'get': True
+                    },
+                    'data': {
+                        '_id': str(ObjectId(user['_id'])),
+                        'username': user.get('username'),
+                        'email': user.get('email')
+                    }
+                    })
