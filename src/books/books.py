@@ -91,6 +91,7 @@ def getBooks():
                                 }), 400
             author_id = mongo.db.authors.find_one({'author': Filter}).get('_id')
             books = mongo.db.books.find({'author_id': author_id})
+
         elif Filter.startswith('%'):
             category = Filter[1:]
             if not validate_category(category):
@@ -100,8 +101,9 @@ def getBooks():
                                     'action': 'get',
                                     'get': False
                                 }
-                                }), 400
+                            }), 400
             books = mongo.db.books.find({'categories': {'$elemMatch': {'$eq': category}}})
+
         elif Filter.startswith('!'):
             Filter = Filter.replace('!', '')
             mongo.db.books.create_index({ "name": "text", "description": "text", "author" : "text" })
@@ -130,11 +132,13 @@ def getBooks():
 def getBook(id):
     book = mongo.db.books.find_one({'_id': ObjectId(id)})
     if not book:
-        return jsonify({'msg': 'Book not found', 'status': {
-            'name': 'not_found',
-            'action': 'get',
-            'get': False
-        }})
+        return jsonify({'msg': 'Book not found',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'get',
+                            'get': False
+                        }
+                        }), 400
 
     return jsonify({
         'msg': 'Book retrieved',
@@ -151,3 +155,89 @@ def getBook(id):
             'categories': book.get('categories')
         }
     })
+
+
+@books_blueprint.route('/books/<id>', methods=['DELETE'])
+@jwt_required()
+@user_access_required(action='delete', name='not_found', pass_user_id=True)
+def deleteBook(id, user_id):
+    book = mongo.db.books.find_one({'_id': ObjectId(id)})
+    if not book:
+        return jsonify({'msg': 'Book not found',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 400
+
+    if not validate_admin(user_id):
+        return jsonify({'msg': 'You are not administrator',
+                        'status': {
+                            'name': 'not_authorized',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 401
+
+    mongo.db.books.delete_one({'user_id': user_id, '_id': ObjectId(id)})
+    return jsonify({'msg': 'Book deleted',
+                    'status': {
+                        'name': 'deleted',
+                        'action': 'delete',
+                        'delete': True
+                    }
+                    })
+
+
+@books_blueprint.route('/books/<id>', methods=['PUT'])
+@jwt_required()
+@user_access_required(action='update', name='not_updated', pass_user_id=True)
+def updateBook(id, user_id):
+    book = request.json.get('book')
+    if not book:
+        return jsonify({'msg': 'No book provided',
+                        'status': {
+                            'name': 'not_updated',
+                            'action': 'update',
+                            'update': False
+                        }
+                        }), 400
+
+    db_book = mongo.db.books.find_one({'_id': ObjectId(id)})
+    if not db_book:
+        return jsonify({'msg': 'Book not found',
+                        'status': {
+                            'name': 'not_found',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 400
+    
+    if not validate_admin(user_id):
+        return jsonify({'msg': 'You are not administrator',
+                        'status': {
+                            'name': 'not_authorized',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 401
+
+    if not validate_book(book):
+        return jsonify({'msg': 'Invalid book',
+                        'status': {
+                            'name': 'not_updated',
+                            'action': 'update',
+                            'update': False
+                        }
+                        }), 400
+
+    mongo.db.books.update_one({'_id': ObjectId(id)},
+                              {'$set': book})
+    return jsonify({'msg': 'Book updated',
+                    'status': {
+                        'name': 'updated',
+                        'action': 'update',
+                        'update': True
+                    }
+                    })

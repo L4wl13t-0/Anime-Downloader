@@ -230,14 +230,7 @@ def updateUserAdmin(user, user_id):
                         }
                         }), 400
 
-    set_data = {}
-    set_data['username'] = data.get('username') if data.get(
-        'username') else get_username(user)
-    if data.get('password'):
-        set_data['password_hash'] = get_password(data.get('password'))
-    if data.get('email'):
-        set_data['email'] = get_password(data.get('email'))
-    mongo.db.users.update_one({'_id': ObjectId(user)}, {'$set': set_data})
+    mongo.db.users.update_one({'_id': ObjectId(user)}, {'$set': data})
 
     return jsonify({'msg': 'User updated successfully',
                     'status': {

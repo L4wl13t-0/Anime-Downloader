@@ -1,10 +1,10 @@
 import cerberus
 
 book_schema = {
-    'name': {'type': 'string', 'required': True},
-    'description': {'type': 'string', 'required': True},
-    'author': {'type': 'string', 'required': True},
-    'categories': {'type': 'list', 'minlength': 1, 'schema': {'type': 'string'}, 'required': True}
+    'name': {'type': 'string', 'required': False},
+    'description': {'type': 'string', 'required': False},
+    'author': {'type': 'string', 'required': False},
+    'categories': {'type': 'list', 'minlength': 1, 'schema': {'type': 'string'}, 'required': False}
 }
 
 def validate_book(book):
