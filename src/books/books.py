@@ -123,3 +123,31 @@ def getBooks():
             'categories': book.get('categories')
         }, books))
     })
+
+
+@books_blueprint.route('/books/<id>', methods=['GET'])
+@jwt_required(optional=True)
+def getBook(id):
+    book = mongo.db.books.find_one({'_id': ObjectId(id)})
+    if not book:
+        return jsonify({'msg': 'Book not found', 'status': {
+            'name': 'not_found',
+            'action': 'get',
+            'get': False
+        }})
+
+    return jsonify({
+        'msg': 'Book retrieved',
+        'status': {
+            'name': 'retrieved',
+            'action': 'get',
+            'get': True
+        },
+        'data': {
+            '_id': str(ObjectId(book['_id'])),
+            'name': book.get('name'),
+            'description': book.get('description'),
+            'author': book.get('author'),
+            'categories': book.get('categories')
+        }
+    })
