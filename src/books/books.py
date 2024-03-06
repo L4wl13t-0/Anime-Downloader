@@ -5,7 +5,7 @@ from schemas.books import validate_book
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.decorators import user_access_required
 from utils.users import get_user_id, get_username, validate_admin
-from utils.books import validate_author, validate_category
+from utils.books import validate_author, validate_category, validate_bookFile
 
 books_blueprint = Blueprint('books', __name__)
 
@@ -46,7 +46,8 @@ def createBook(user_id):
         'name': book.get('name'),
         'description': book.get('description'),
         'author': book.get('author'),
-        'categories': book.get('categories')
+        'categories': book.get('categories'),
+        'filename': "default.epub"
     })
 
     author = mongo.db.authors.find_one_and_update(
@@ -72,6 +73,50 @@ def createBook(user_id):
                     }
                     })
 
+@books_blueprint.route('/uploadbook/<id>', methods=['POST'])
+@jwt_required()
+@user_access_required('create', 'not_created', pass_user_id=True)
+def uploadBook(id, user_id):
+    if not validate_admin(user_id):
+        return jsonify({'msg': 'You are not administrator',
+                        'status': {
+                            'name': 'not_authorized',
+                            'action': 'delete',
+                            'delete': False
+                        }
+                        }), 401
+    
+    book = request.files.get('fileBook')
+    if not book:
+        return jsonify({'msg': 'No book provided',
+                        'status': {
+                            'name': 'not_created',
+                            'action': 'create',
+                            'create': False
+                        }
+                        }), 400
+
+    if not validate_bookFile(book):
+        return jsonify({'msg': 'Invalid book',
+                        'status': {
+                            'name': 'not_created',
+                            'action': 'create',
+                            'create': False
+                        }
+                        }), 400
+
+    idUpload = mongo.db.books.update_one(
+        {'_id': ObjectId(id)},
+        {'$set': {'filename': book.filename}}
+    )
+
+    return jsonify({'msg': 'Book created',
+                    'status': {
+                        'name': 'created',
+                        'action': 'create',
+                        'create': True
+                    }
+                    })
 
 @books_blueprint.route('/books', methods=['GET'])
 def getBooks(): 

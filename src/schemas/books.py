@@ -9,3 +9,4 @@ book_schema = {
 
 def validate_book(book):
     return cerberus.Validator(book_schema).validate(book)
+
