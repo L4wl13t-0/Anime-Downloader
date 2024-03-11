@@ -41,6 +41,6 @@ def validate_username(username):
 
 def validate_admin(user_id):
     user = mongo.db.users.find_one({'_id': user_id})
-    if not user.get('admin'):
+    if not user.get(3):
         return False
     return True

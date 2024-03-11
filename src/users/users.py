@@ -57,7 +57,8 @@ def register():
     user = {'username': username,
             'password_hash': get_password(password),
             'email': email,
-            'admin': False,
+            'role': 1,
+            'profile_image': 'default.png',
             'created_at': datetime.datetime.utcnow(),
             }
 
