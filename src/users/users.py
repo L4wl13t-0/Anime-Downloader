@@ -11,7 +11,7 @@ import datetime
 
 users_blueprint = blueprints.Blueprint('users', __name__)
 
-
+#Modicamos
 @users_blueprint.route('/users', methods=['POST'])
 def register():
     username = request.json.get('username')
