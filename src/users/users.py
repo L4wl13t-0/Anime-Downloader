@@ -275,6 +275,7 @@ def getProfile():
 @jwt_required(optional=True)
 def getUserData(username):
     user = mongo.db.users.find_one({'username': username})
+    user_id = get_user_id(get_jwt_identity()) if get_jwt_identity() else None
     if not user:
         return jsonify({'msg': 'User not found',
                         'status': {
@@ -293,6 +294,6 @@ def getUserData(username):
                     'data': {
                         '_id': str(ObjectId(user['_id'])),
                         'username': user.get('username'),
-                        'email': user.get('email')
+                        'email': user.get('email') if user_id and validate_admin(user_id) else None
                     }
                     })
