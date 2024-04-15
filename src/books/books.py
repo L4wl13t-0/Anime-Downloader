@@ -45,7 +45,8 @@ def createBook(user_id):
     id = mongo.db.books.insert_one({
         'name': book.get('name'),
         'description': book.get('description'),
-        'author_id': book.get('author'),
+        'author': book.get('author'),
+        'author_id': None,
         'categories': book.get('categories'),
         'filename': "default.epub",
         'cover_image': 'default.png',
