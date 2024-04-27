@@ -58,7 +58,6 @@ def register():
             'password_hash': get_password(password),
             'email': email,
             'role': 1,
-            'profile_image': 'default.png',
             'created_at': datetime.datetime.utcnow(),
             }
 
