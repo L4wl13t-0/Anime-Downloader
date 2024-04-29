@@ -5,7 +5,7 @@ from schemas.books import validate_book
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.decorators import user_access_required
 from utils.users import get_user_id, get_username, validate_admin
-from utils.books import validate_author, validate_category, validate_bookFile
+from utils.books import validate_author, validate_category, validate_bookFile, get_epub_cover
 
 books_blueprint = Blueprint('books', __name__)
 
@@ -107,15 +107,18 @@ def uploadBook(id, user_id):
                             'create': False
                         }
                         }), 400
+    
+    cover_image = get_epub_cover(book)
 
     idUpload = mongo.db.books.update_one(
         {'_id': ObjectId(id)},
-        {'$set': {'filename': book.filename}}
+        {'$set': {'filename': book.filename,
+                  'cover_image': cover_image}}
     )
 
-    return jsonify({'msg': 'Book created',
+    return jsonify({'msg': 'Book uploaded',
                     'status': {
-                        'name': 'created',
+                        'name': 'uploaded',
                         'action': 'create',
                         'create': True
                     }
