@@ -40,7 +40,7 @@ def createBook(user_id):
                             'action': 'create',
                             'create': False
                         }
-                        }), 400
+                        }), 403
 
     id = mongo.db.books.insert_one({
         'name': book.get('name'),
@@ -74,7 +74,7 @@ def createBook(user_id):
                     'data': {
                         'id': str(id.inserted_id),
                     }
-                    })
+                    }), 201
 
 @books_blueprint.route('/uploadbook/<id>', methods=['POST'])
 @jwt_required()
@@ -106,7 +106,7 @@ def uploadBook(id, user_id):
                             'action': 'create',
                             'create': False
                         }
-                        }), 400
+                        }), 403
     
     cover_image = get_epub_cover(book)
 
@@ -122,7 +122,7 @@ def uploadBook(id, user_id):
                         'action': 'create',
                         'create': True
                     }
-                    })
+                    }), 202
 
 @books_blueprint.route('/books', methods=['GET'])
 def getBooks(): 
@@ -175,7 +175,7 @@ def getBooks():
             'author': book.get('author'),
             'categories': book.get('categories')
         }, books))
-    })
+    }), 200
 
 
 @books_blueprint.route('/books/<id>', methods=['GET'])
@@ -205,7 +205,7 @@ def getBook(id):
             'author': book.get('author'),
             'categories': book.get('categories')
         }
-    })
+    }), 200
 
 
 @books_blueprint.route('/books/<id>', methods=['DELETE'])
@@ -238,7 +238,7 @@ def deleteBook(id, user_id):
                         'action': 'delete',
                         'delete': True
                     }
-                    })
+                    }), 202
 
 
 @books_blueprint.route('/books/<id>', methods=['PUT'])
@@ -291,4 +291,4 @@ def updateBook(id, user_id):
                         'action': 'update',
                         'update': True
                     }
-                    })
+                    }), 202

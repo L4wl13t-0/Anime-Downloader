@@ -106,7 +106,7 @@ def login():
                         'data': {
                             'token': token
                         }
-                        })
+                        }), 200
 
 
 @users_blueprint.route('/users/<user>', methods=['DELETE'])
@@ -129,7 +129,7 @@ def deleteUser(user, user_id):
                             'action': 'delete',
                             'delete': False
                         }
-                        }), 401
+                        }), 400
 
     mongo.db.users.delete_one({'_id': ObjectId(user)})
     return jsonify({'msg': 'User deleted successfully',
@@ -138,7 +138,7 @@ def deleteUser(user, user_id):
                         'action': 'delete',
                         'delete': True
                     }
-                    })
+                    }), 200
 
 
 @users_blueprint.route('/users', methods=['PUT'])
@@ -187,7 +187,7 @@ def updateUser(user_id):
                         'action': 'update',
                         'update': True
                     }
-                    })
+                    }), 202
 
 
 @users_blueprint.route('/users/<user>', methods=['PUT'])
@@ -238,7 +238,7 @@ def updateUserAdmin(user, user_id):
                         'action': 'update',
                         'update': True
                     }
-                    })
+                    }), 202
 
 
 @users_blueprint.route('/users/profile', methods=['GET'])
@@ -254,7 +254,7 @@ def getProfile():
                             'action': 'get',
                             'get': False
                         }
-                        })
+                        }), 401
 
     return jsonify({'msg': 'User retrieved',
                     'status': {
@@ -267,7 +267,7 @@ def getProfile():
                         'username': user.get('username'),
                         'email': user.get('email')
                     }
-                    })
+                    }), 200
 
 
 @users_blueprint.route('/users/<username>', methods=['GET'])
@@ -282,7 +282,7 @@ def getUserData(username):
                             'action': 'get',
                             'get': False
                         }
-                        })
+                        }), 401
 
     return jsonify({'msg': 'User retrieved',
                     'status': {
@@ -295,4 +295,4 @@ def getUserData(username):
                         'username': user.get('username'),
                         'email': user.get('email') if user_id and validate_admin(user_id) else None
                     }
-                    })
+                    }), 200
